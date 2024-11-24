@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Léxica</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-section">
+            <h1>Calculadora Léxica</h1>
+            <form method="POST" id="calculator-form">
+                <input type="text" id="operation" name="operation" value="{{ operation }}" readonly required>
+                <input type="hidden" id="result" name="result">
+                <div class="calculator">
+
+                    <button type="button" onclick="appendValue('7')">7</button>
+                    <button type="button" onclick="appendValue('8')">8</button>
+                    <button type="button" onclick="appendValue('9')">9</button>
+                    <button type="button" onclick="appendValue('/')">÷</button>
+
+                    <button type="button" onclick="appendValue('4')">4</button>
+                    <button type="button" onclick="appendValue('5')">5</button>
+                    <button type="button" onclick="appendValue('6')">6</button>
+                    <button type="button" onclick="appendValue('*')">×</button>
+
+                    <button type="button" onclick="appendValue('1')">1</button>
+                    <button type="button" onclick="appendValue('2')">2</button>
+                    <button type="button" onclick="appendValue('3')">3</button>
+                    <button type="button" onclick="appendValue('-')">−</button>
+
+                    <button type="button" onclick="appendValue('0')">0</button>
+                    <button type="button" onclick="clearLast()">DEL</button>
+                    <button type="button" onclick="clearAll()">C</button>
+                    <button type="button" onclick="appendValue('+')">+</button>
+
+                    <button type="button" onclick="saveMemory()">MS</button>
+                    <button type="button" onclick="recallMemory()">MR</button>
+                    <button type="button" onclick="calculate()">=</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-section">
+            <h2>Resultados Léxicos</h2>
+            {% if tokens_list %}
+            <div class="results">
+                <h3>Lista de Tokens</h3>
+                <ul>
+                    {% for token in tokens_list %}
+                    <li>{{ token.type }}: {{ token.value }}</li>
+                    {% endfor %}
+                </ul>
+                <p>Total de tokens: {{ total_tokens }}</p>
+                <p>Total de números enteros: {{ total_numbers }}</p>
+                <p>Total de operadores: {{ total_operators }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="tree">
+            <h3>Árbol Sintáctico</h3>
+            <div id="tree-container" class="tree-container"></div> 
+        </div>
+    </div>
+
+    <script>
+        let memory = "";
+
+        function appendValue(value) {
+            const operation = document.getElementById('operation');
+            operation.value += value;
+        }
+
+        function clearLast() {
+            const operation = document.getElementById('operation');
+            operation.value = operation.value.slice(0, -1);
+        }
+
+        function clearAll() {
+            const operation = document.getElementById('operation');
+            operation.value = "";
+        }
+
+        function saveMemory() {
+            const operation = document.getElementById('operation');
+            memory = operation.value;
+        }
+
+        function recallMemory() {
+            const operation = document.getElementById('operation');
+            operation.value += memory;
+        }
+
+        function calculate() {
+            const operation = document.getElementById('operation');
+            const resultField = document.getElementById('result');
+
+            try {
+                document.getElementById('calculator-form').submit();
+                const result = eval(operation.value.replace('÷', '/').replace('×', '*'));
+                operation.value = operation.value; 
+                resultField.value = result; 
+            } catch (error) {
+                operation.value = "Error";
+                return false;
+            }
+
+            operation.value = resultField.value;
+        }
+
+        const treeData = JSON.parse('{{ tree_structure | safe }}');
+        console.log(treeData);
+        
+        const margin = { top: 20, right: 120, bottom: 20, left: 120 };
+        const width = 960 - margin.left - margin.right;
+        const height = 600 - margin.top - margin.bottom;
+
+        const i = 0;
+        const duration = 750;
+        const root = d3.hierarchy(treeData);
+
+        const tree = d3.tree().size([height, width]);
+        tree(root);
+
+        const svg = d3.select("#tree-container").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        const nodes = root.descendants();
+        const links = root.links();
+
+        const link = svg.selectAll(".link")
+            .data(links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", d3.linkHorizontal()
+                .x(d => d.y)
+                .y(d => d.x));
+
+        const node = svg.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+
+        node.append("circle")
+            .attr("r", 10)
+            .style("fill", "#ffcc00");
+
+        node.append("text")
+            .attr("dy", 3)
+            .attr("x", d => d.children ? -12 : 12)
+            .style("text-anchor", d => d.children ? "end" : "start")
+            .text(d => d.data.name);
+    </script>
+</body>
+</html>
