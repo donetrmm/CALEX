@@ -36,6 +36,7 @@
                     <button type="button" onclick="clearAll()">C</button>
                     <button type="button" onclick="appendValue('+')">+</button>
 
+                    <button type="button" onclick="appendDecimal()">.</button> <!-- Nuevo botón para el punto decimal -->
                     <button type="button" onclick="saveMemory()">MS</button>
                     <button type="button" onclick="recallMemory()">MR</button>
                     <button type="button" onclick="calculate()">=</button>
@@ -72,6 +73,14 @@
         function appendValue(value) {
             const operation = document.getElementById('operation');
             operation.value += value;
+        }
+
+        function appendDecimal() {
+            const operation = document.getElementById('operation');
+            const lastNumber = operation.value.split(/[\+\-\×\/]/).pop(); // Captura el último número
+            if (!lastNumber.includes(".")) {
+                operation.value += '.';
+            }
         }
 
         function clearLast() {

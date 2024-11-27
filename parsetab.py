@@ -27,10 +27,10 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','CALCU2.py',44),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','CALCU2.py',45),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','CALCU2.py',46),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','CALCU2.py',47),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','CALCU2.py',51),
-  ('expression -> NUMBER','expression',1,'p_expression_number','CALCU2.py',55),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','CALCU2.py',52),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','CALCU2.py',53),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','CALCU2.py',54),
+  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','CALCU2.py',55),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','CALCU2.py',60),
+  ('expression -> NUMBER','expression',1,'p_expression_number','CALCU2.py',65),
 ]
